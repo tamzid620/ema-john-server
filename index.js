@@ -32,6 +32,11 @@ async function run() {
       res.send(result);
     })
 
+    app.get('/totalProducts' , async(req, res) => {
+      const result = await productCollection.estimatedDocumentCount();
+      res.send({totalProducts : result})
+    })
+
     await client.connect();
 
     await client.db("admin").command({ ping: 1 });
