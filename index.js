@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -41,8 +41,15 @@ async function run() {
       const result = await productCollection.estimatedDocumentCount();
       res.send({totalProducts : result})
     })
-
-    await client.connect();
+    // await client.connect();
+    app.post('/productsByIds', async(req, res) => {
+      const ids = req.body;
+      const objectIds = ids.map(id => new ObjectId(id));
+      const query = { _id: { $in: objectIds } }
+      console.log(ids);
+      const result = await productCollection.find(query).toArray();
+      res.send(result);
+    })
 
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
